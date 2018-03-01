@@ -22,13 +22,18 @@ GoogleMaps = {
   maps: {},
   _callbacks: {},
   initialize: function() {
-    this._loaded.set(true);
+    let arr = [];
     _.each(this.utilityLibraries, function(path) {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = path;
-
-      document.body.appendChild(script);
+      arr.push(new Promise(resolve => {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = path;
+        script.onload = resolve;
+        document.body.appendChild(script);
+      })
+      Promise.all(arr).then(() => {
+        this._loaded.set(true); 
+      });
     });
   },
   _ready: function(name, map) {
